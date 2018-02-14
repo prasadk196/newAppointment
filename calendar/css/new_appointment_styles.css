@@ -1,0 +1,194 @@
+﻿body {
+    position:absolute !important;
+    height:100%;
+    width:100%;
+}
+.loader{
+    width: 100%;
+    background: rgba(141, 139, 139, 0.28);
+    position: absolute;
+    top: 0;
+    height: 100%;
+    z-index: 2003;
+}
+.loader > img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+}
+header {  
+    background-color: #5C2985;  
+    width: 100%;  
+    height: 50px;  
+    color: white;  
+    text-align: center; 
+    margin-bottom: 20px;
+}  
+header span {    
+    display: inline-block;    
+    margin: 15px 0px;    
+    vertical-align: middle;    
+    text-transform: uppercase;    
+    font-size: 15px;    
+    font-weight: bold;
+}
+.wrapperDiv{
+    min-width: 1024px;
+    margin-right: auto;
+    margin-left: auto;
+    width: 60%;
+    padding: 25px;
+    padding-top: 50px;
+}
+.fieldContainer .fieldSet{
+    width:30%;
+    min-width:325px;
+    display:inline-table;
+}
+.fieldContainer{margin-bottom:20px;}
+.fieldContainer label{display:inline-block;width:25%;font-weight:bold;font-size:14px;}
+.formField {padding-bottom: 20px;position:relative;}
+.formHeader{
+    font-size: 20px;
+    margin-bottom: 60px;
+}
+.combobox-container{display:inline-block;}
+.combobox-container .caret{position:relative;top:14px;}
+.combobox-container .input-group-addon {
+    position:relative;
+    left:-20px;
+ } 
+.combobox-container input,.pickerContainer input{margin-bottom:0px !important;}
+.combobox-container ul{width:220px;overflow-x:hidden;}
+.pickerContainer{display:inline-block;}
+.exceptionCheckbox input{
+    margin-top: 0px !important;
+    margin-left: 5px !important;
+}
+.exceptionCheckbox {
+    height:30px;
+}
+.formField .btn-group>.btn:first-child,.formField .btn-group>.dropdown-menu {
+    width:220px;
+    text-align:left;
+}
+.formField .btn .caret{float:right;}
+.footerContainer button,#saveBtn,#backBtn{
+    width: 110px;
+    background-color: #65635d;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    padding: 10px;
+    cursor: pointer;
+    color: white;
+    border-radius: 10px;
+    margin-right:15px;
+}
+.combobox-container .dropdown-menu>li>a{
+    width: 180px;
+    white-space: pre-line;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ui-timepicker-container{position:absolute;overflow-x:hidden;overflow-y:auto;height:200px !important;border-bottom:1px solid #aaaaaa;}
+.ui-timepicker-container ul{list-style:none;margin:0px !important;}
+input.timepicker{
+    width:150px !important;
+    height:30px;
+    border:1px solid #ccc;
+    border-radius:4px;
+    background-color:#f5f5f5;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.05);
+    background-image:linear-gradient(to bottom,#fff,#e6e6e6);
+}
+.btn-group .caret {
+    position: relative;
+    top: 14px;
+    left: -16px;
+}
+input:focus:invalid:focus {
+    border-color:#ccc !important;
+    color:initial !important;
+    -webkit-box-shadow:initial !important;
+    box-shadow:initial !important;
+}
+.errorField {
+border:1px solid red !important;
+}
+.customerResult {
+    display:none;
+    width: 220px;
+    border: 1px solid #ccc;
+    list-style: none;
+    padding: 5px;
+    overflow-y: auto;
+    position: absolute;
+    background:#fff;
+    height: 180px;
+    position: absolute;
+    top: 50%;
+    left: 19%;
+    z-index:99;
+}
+.customerResult li:hover {
+    background-color:#0081c2;
+    color:#fff;    
+  }
+.customerResult li {
+    padding:5px;
+    cursor:pointer;
+}
+    .customerResult .noResultFound {
+        padding:5px;
+        text-align:center;
+    }
+
+#sideNav {
+    width:100%;
+    position:fixed;
+    opacity:99;
+    z-index:99;
+    transition:0.5s;
+    top:60px;
+    visibility:hidden;
+    height: calc(100% - 70px);
+}
+#appointment {
+    height:calc(100% - 30px) !important;
+}
+.frt{float:right;}
+#backBtn{
+    position:relative;
+    z-index:999;
+    top:-15px;
+    display:none;
+}
+#findSlot {
+    display:none;
+}
+.timepicker[disabled] {
+    cursor:not-allowed;
+}
+label span{color:red;}
+.student-astriek,.displayNone,.service-astriek{display:none;}
+.search {
+    height:15px;
+    width:15px;
+    position: relative;
+    left: -30px;
+    cursor:pointer;
+}
+.search img {
+   max-height: 15px;
+   max-width:15px;
+   transform: rotateY(180deg);
+}
+input[type="text"],select{
+    margin-bottom:0px !important;
+}
+.dropdown-toggle[disabled] {
+    cursor:not-allowed !important;
+}

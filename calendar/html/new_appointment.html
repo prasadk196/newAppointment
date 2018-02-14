@@ -1,0 +1,201 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/webresources/hub_/calendar/css/font.css">
+    <link rel="stylesheet" type="text/css" href="/webresources/hub_/newAppointment/calendar/css/new_appointment_styles.css">
+    <link rel="stylesheet" type="text/css" href="/webresources/hub_/calendar/css/jquery_ui_1.8.23.css">
+    <link rel="stylesheet" type="text/css" href="/webresources/hub_/calendar/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/webresources/hub_/newAppointment/calendar/css/bootstrap_combobox.css">
+    <link rel="stylesheet" type="text/css" href="/webresources/hub_/calendar/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/webresources/hub_/calendar/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/webresources/hub_/calendar/css/fullcalendar.css">
+    <link rel='stylesheet' type='text/css' href='/webresources/hub_/findSlot/css/showavailableappt_style.css' />
+</head>
+<body>
+    <header>
+        <span>New Appointment</span>
+    </header>
+    <div class="loader">
+        <img class="load-img" src="/webresources/hub_/calendar/images/loading.gif">
+    </div>
+    <div class="loading">
+        <img class="load-img" src="/webresources/hub_/calendar/images/loading.gif">
+    </div>
+    <div class="sideNavContainer">
+        <div>
+           <button id="backBtn" class="frt">Back</button>
+        </div>
+        <div id="sideNav">
+            <div class="header-container">
+                <div id="dialog" style="display: none;">
+                    <p class="dialog-msg"></p>
+                </div>
+                <div class="padding-left-m display-inline-block">
+                    <span>
+                        <i class="prevBtn icon-chevron-left"></i>
+                        <span class="headerDate"></span>
+                        <i class="nextBtn icon-chevron-right"></i>
+                        <input type="hidden" id="datepicker">
+                    </span>
+                </div>
+            </div>
+            <div id='appointment'>
+            </div>
+        </div>
+    </div>
+    <div class="wrapperDiv">
+        <div id="dialog" style="display: none;">
+            <p class="dialog-msg"></p>
+        </div>
+        <form id="appointmentForm" novalidate name="appointmentObj">
+            <div class="fieldContainer">
+                <div class="fieldSet">
+                    <div class="formField customer">
+                        <label>Customer <span> *</span></label>
+                        <input type="text" required name="customer" customer-id="" class="customer-comboBox" placeholder="Select a Customer"/>
+                        <span class="search">
+                            <img src="../images/Search.png"/>
+                        </span>
+                        <ul class="customerResult"></ul>
+                    </div>
+                    <div class="formField student">
+                        <label>Student <span class="student-astriek">*</span></label>
+                        <select name="student" class="student-dropdown comboBox">
+                            <option value="" selected="selected">Select a Student</option>
+                        </select>
+                    </div>
+                    <div class="formField location">
+                        <label>Location <span> *</span></label>
+                        <select name="location" required class="location-dropdown comboBox">
+                            <option value="" selected="selected">Select a location</option>
+                        </select>
+                    </div>
+                    <div class="formField">
+                        <label>Mode</label>
+                        <div class="mode-dropdown btn-group">
+                            <button type="button" name="mode" class="btn dropdown-toggle mode-btn" data-toggle="dropdown">
+                                Select a Mode  
+                            </button><span class="caret"></span>
+                            <ul class="dropdown-menu">
+                                <li><a href="javascript:void(0)" value-id="1" value="Phone">Phone</a></li>
+                                <li><a href="javascript:void(0)" value-id="2" value="in Person">In Person</a></li>
+                                <li><a href="javascript:void(0)" value-id="3" value="Email">Email</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="formField">
+                        <label>Description</label>
+                        <textarea name="description"></textarea>
+                    </div>
+                </div>
+                <div class="fieldSet">
+                    <div class="formField">
+                        <label>Type <span> *</span></label>
+                        <div class="type-dropdown btn-group">
+                            <button type="button" name="type" required class="btn dropdown-toggle type-btn" data-toggle="dropdown">
+                                Select a Type  
+                            </button><span class="caret"></span>
+                            <ul class="dropdown-menu">
+                                <li><a href="javascript:void(0)" value-id="1" value="School Visit">Center Visit</a></li>
+                                <li><a href="javascript:void(0)" value-id="2" value="Practise Test">Practice Test</a></li>
+                                <li><a href="javascript:void(0)" value-id="3" value="School Visit">School Visit</a></li>
+                                <li><a href="javascript:void(0)" value-id="4" value="Welcome Conference">Welcome Conference</a></li>
+                                <li><a href="javascript:void(0)" value-id="5" value="Enrollment Conference">Enrollment Conference</a></li>
+                                <li><a href="javascript:void(0)" value-id="6" value="Initial Assessment">Initial Assessment</a></li>
+                                <li><a href="javascript:void(0)" value-id="7" value="Progress Assessment">Progress Assessment</a></li>
+                                <li><a href="javascript:void(0)" value-id="8" value="Ongoing Conference">Ongoing Conference</a></li>
+                                <li><a href="javascript:void(0)" value-id="9" value="Care call">Care call</a></li>
+                                <li><a href="javascript:void(0)" value-id="10" value="Event">Event</a></li>
+                                <li><a href="javascript:void(0)" value-id="11" value="Care call">Starter Sessions</a></li>
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="formField">
+                        <div class="exceptionCheckbox">
+                            <label>Is Exception</label><input name="exception" type="checkbox">
+                        </div>
+                    </div>
+                    <div class="formField service">
+                        <label>Service <span class="service-astriek"> *</span></label>
+                        <select name="service" disabled required class="service-dropdown comboBox">
+                            <option value="" selected="selected">Select a Service</option>
+                        </select>
+                    </div>
+                    <div class="formField">
+                        <label>Pricelist <span class="service-astriek"> *</span></label>
+                        <div class="pricelist-dropdown btn-group">
+                            <button type="button" name="pricelist" disabled class="btn dropdown-toggle price-btn" data-toggle="dropdown">
+                                Select a Pricelist
+                            </button><span class="caret"></span>
+                            <ul class="dropdown-menu">
+                               
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="formField">
+                        <label>Discount</label>
+                        <div class="discount-dropdown btn-group">
+                            <button type="button" name="discount" disabled class="btn dropdown-toggle discount-btn" data-toggle="dropdown">
+                                Select a Discount
+                            </button><span class="caret"></span>
+                            <ul class="dropdown-menu">
+                               
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="fieldSet">
+                    <div class="formField">
+                        <label>Date <span>*</span></label>
+                        <div class='pickerContainer'>
+                            <input name="startDate" required type="text" class="picker" />
+                        </div>
+                    </div>
+                    <div class="formField">
+                        <label>Start Time <span>*</span></label>
+                        <div class='pickerContainer'>
+                            <input name="startTime" required type="button" class=" start-timepicker timepicker" />
+                        </div>
+                    </div>
+                    <div class="formField">
+                        <label>
+                            End Time <span>*</span>
+                        </label>
+                        <div class='pickerContainer'>
+                            <input name="endTime" required type="button" class="end-timepicker timepicker" />
+                        </div>
+                    </div>
+                    <div>
+                        
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="footerContainer">
+            <button type="button" id ='saveBtn'>Save</button>
+            <button type="button" id='closeBtn'>Close</button>
+            <button type="button" id='findSlot'>Find Slots</button>
+        </div>
+        <button type="button" class="displayNone" id='enableService'>Find Slots</button>
+        <button type="button" class="displayNone" id="refetch"></button>
+    </div>
+    <script type="text/javascript" src="/webresources/hub_/calendar/js/jquery_1.9.0.min.js"></script>
+    <script type="text/javascript" src="/webresources/hub_/calendar/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/webresources/hub_/calendar/js/moment.min.js"></script>
+    <script type="text/javascript" src="/webresources/hub_/calendar/js/jquery_ui_1.9.2.min.js"></script>
+    <script type="text/javascript" src="/webresources/hub_/calendar/js/jquery_timepicker_1.3.5.min.js"></script>
+    <script type="text/javascript" src="../../../ClientGlobalContext.js.aspx"></script>
+    <script type="text/javascript" src="/webresources/hub_/newAppointment/calendar/js/jquery.validate.js"></script>
+    <script type="text/javascript" src="/webresources/hub_/newAppointment/calendar/js/bootstrap_combobox.js"></script>
+    <script type="text/javascript" src="/webresources/hub_/js/commonWebAPI.js"></script>
+    <script type="text/javascript" src="/webresources/hub_/calendar/js/widget.js"></script>
+    <script type="text/javascript" src="/webresources/hub_/newAppointment/calendar/js/new_appointment_view.js"></script>
+    <script type="text/javascript" src="/webresources/hub_/newAppointment/calendar/js/new_appointmentinterface.js"></script>
+    <script type="text/javascript" src="/webresources/hub_/newAppointment/calendar/js/new_appointment_UI.js"></script>
+    <script type='text/javascript' src='/webresources/hub_/findSlot/js/fullcalendar.js'></script>
+    <script type='text/javascript' src='/webresources/hub_/findSlot/js/availableappt.js'></script>
+    <script type='text/javascript' src='/webresources/hub_/findSlot/js/availableappt_view.js'></script>
+    <script type='text/javascript' src='/webresources/hub_/findSlot/js/availableapptUI.js'></script>
+</body>
+</html>
