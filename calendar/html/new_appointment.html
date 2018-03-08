@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="/webresources/hub_/calendar/css/font.css">
@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="/webresources/hub_/calendar/css/style.css">
     <link rel="stylesheet" type="text/css" href="/webresources/hub_/calendar/css/common.css">
     <link rel="stylesheet" type="text/css" href="/webresources/hub_/calendar/css/fullcalendar.css">
-    <link rel='stylesheet' type='text/css' href='/webresources/hub_/findSlot/css/showavailableappt_style.css' />
+    <link rel="stylesheet" type="text/css" href="/webresources/hub_/findSlot/css/showavailableappt_style.css">
 </head>
 <body>
     <header>
@@ -77,9 +77,9 @@
                                 Select a Mode  
                             </button><span class="caret"></span>
                             <ul class="dropdown-menu">
-                                <li><a href="javascript:void(0)" value-id="1" value="Phone">Phone</a></li>
-                                <li><a href="javascript:void(0)" value-id="2" value="in Person">In Person</a></li>
                                 <li><a href="javascript:void(0)" value-id="3" value="Email">Email</a></li>
+                                <li><a href="javascript:void(0)" value-id="2" value="in Person">In Person</a></li>
+                                <li><a href="javascript:void(0)" value-id="1" value="Phone">Phone</a></li>
                             </ul>
                         </div>
                     </div>
@@ -96,18 +96,18 @@
                                 Select a Type  
                             </button><span class="caret"></span>
                             <ul class="dropdown-menu">
+                                <li><a href="javascript:void(0)" value-id="9" value="Care call">Care Call</a></li>
                                 <li><a href="javascript:void(0)" value-id="1" value="School Visit">Center Visit</a></li>
-                                <li><a href="javascript:void(0)" value-id="2" value="Practise Test">Practice Test</a></li>
-                                <li><a href="javascript:void(0)" value-id="3" value="School Visit">School Visit</a></li>
-                                <li><a href="javascript:void(0)" value-id="4" value="Welcome Conference">Welcome Conference</a></li>
                                 <li><a href="javascript:void(0)" value-id="5" value="Enrollment Conference">Enrollment Conference</a></li>
-                                <li><a href="javascript:void(0)" value-id="6" value="Initial Assessment">Initial Assessment</a></li>
-                                <li><a href="javascript:void(0)" value-id="7" value="Progress Assessment">Progress Assessment</a></li>
-                                <li><a href="javascript:void(0)" value-id="8" value="Ongoing Conference">Ongoing Conference</a></li>
-                                <li><a href="javascript:void(0)" value-id="9" value="Care call">Care call</a></li>
                                 <li><a href="javascript:void(0)" value-id="10" value="Event">Event</a></li>
+                                <li><a href="javascript:void(0)" value-id="6" value="Initial Assessment">Initial Assessment</a></li>
+                                <li><a href="javascript:void(0)" value-id="12" value="Care call">Miscellaneous</a></li>
+                                <li><a href="javascript:void(0)" value-id="8" value="Ongoing Conference">Ongoing Conference</a></li>
+                                <li><a href="javascript:void(0)" value-id="2" value="Practise Test">Practice Test</a></li>
+                                <li><a href="javascript:void(0)" value-id="7" value="Progress Assessment">Progress Assessment</a></li>
+                                <li><a href="javascript:void(0)" value-id="3" value="School Visit">School Visit</a></li>
                                 <li><a href="javascript:void(0)" value-id="11" value="Care call">Starter Sessions</a></li>
-
+                                <li><a href="javascript:void(0)" value-id="4" value="Welcome Conference">Welcome Conference</a></li>
                             </ul>
                         </div>
                     </div>
@@ -166,8 +166,20 @@
                             <input name="endTime" required type="button" class="end-timepicker timepicker" />
                         </div>
                     </div>
-                    <div>
-                        
+                    <div class="formField">
+                        <label>Staff</label>
+                        <div class="staff-dropdown btn-group">
+                            <button type="button" name="staff" disabled class="btn dropdown-toggle staff-btn" data-toggle="dropdown">
+                                Select a Staff
+                            </button><span class="caret"></span>
+                            <ul class="dropdown-menu"></ul>
+                        </div>
+                    </div>
+                    <div class="formField">
+                        <div class="miscellaneousCheckbox">
+                            <label>Full Day</label><input disabled name="allDay" type="checkbox" class="allDay-checkbox">
+                            <label class="ml20p">Out of Office</label><input class="ml25pimp" name="outOfOffice" type="checkbox">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -193,9 +205,9 @@
     <script type="text/javascript" src="/webresources/hub_/newAppointment/calendar/js/new_appointment_view.js"></script>
     <script type="text/javascript" src="/webresources/hub_/newAppointment/calendar/js/new_appointmentinterface.js"></script>
     <script type="text/javascript" src="/webresources/hub_/newAppointment/calendar/js/new_appointment_UI.js"></script>
-    <script type='text/javascript' src='/webresources/hub_/findSlot/js/fullcalendar.js'></script>
-    <script type='text/javascript' src='/webresources/hub_/findSlot/js/availableappt.js'></script>
-    <script type='text/javascript' src='/webresources/hub_/findSlot/js/availableappt_view.js'></script>
-    <script type='text/javascript' src='/webresources/hub_/findSlot/js/availableapptUI.js'></script>
+    <script type="text/javascript" src="/webresources/hub_/findSlot/js/fullcalendar.js"></script>
+    <script type="text/javascript" src="/webresources/hub_/findSlot/js/availableappt.js"></script>
+    <script type="text/javascript" src="/webresources/hub_/findSlot/js/availableappt_view.js"></script>
+    <script type="text/javascript" src="/webresources/hub_/findSlot/js/availableapptUI.js"></script>
 </body>
 </html>
