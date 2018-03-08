@@ -1,4 +1,4 @@
-﻿body {
+body {
     position:absolute !important;
     height:100%;
     width:100%;
@@ -73,6 +73,9 @@ header span {
 .formField .btn-group>.btn:first-child,.formField .btn-group>.dropdown-menu {
     width:220px;
     text-align:left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
 }
 .formField .btn .caret{float:right;}
 .footerContainer button,#saveBtn,#backBtn{
@@ -120,7 +123,7 @@ border:1px solid red !important;
 }
 .customerResult {
     display:none;
-    width: 220px;
+    width: 205px;
     border: 1px solid #ccc;
     list-style: none;
     padding: 5px;
@@ -129,7 +132,7 @@ border:1px solid red !important;
     background:#fff;
     height: 180px;
     position: absolute;
-    top: 50%;
+    top: 60%;
     left: 19%;
     z-index:99;
 }
@@ -192,3 +195,10 @@ input[type="text"],select{
 .dropdown-toggle[disabled] {
     cursor:not-allowed !important;
 }
+.formField .dropdown-menu > li > a {
+    overflow-x:hidden;
+    white-space:pre-wrap !important;
+}
+.ml20p {margin-left:20px;}
+.ml25pimp {margin-left:25px !important;}
+.w90pimp {width:90px !important;}
