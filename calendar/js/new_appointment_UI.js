@@ -1,11 +1,13 @@
-﻿$(function () {
+$(function () {
     var data = new AppointmentData();
     $(".loader").show();
     var customers = [];
     var studentMandatoryArray = ["1","7","2","6","11"];
-    var nonPaidAppointments = ["3", "4", "5", "7", "8", "9"];
-    var serviceEnabling = ["1", "3", "4", "5", "7", "8", "9"];
+    var nonPaidAppointments = ["3", "4", "5", "7", "8", "9","12"];
+    var serviceDisabled = ["1", "3", "4", "5", "7", "8", "9","12"];
     var appointmentHour;
+    var currentUser = data.getLoggedInUser();
+    currentUser = currentUser[0];
     var disableddates = [];
         setTimeout(function () {
             var timeout;
@@ -102,8 +104,9 @@
     $('body').on("click", ".wrapperDiv", function () {
         var customerResult = $(".customer .customerResult");
         var searchBox = $(".customer .customer-comboBox");
+        var type = $(".type-btn");
         if (customerResult.length) {
-            if (searchBox.val() != searchBox.text()) {
+            if (searchBox.val() != searchBox.text() && type.val() != "12") {
                 searchBox.val('');
             }
             customerResult.css("display", "none");
@@ -199,10 +202,14 @@
             enableServices();
             validateappointment();
             timeValidator();
+            populateStaff(date);
         }
     };
     
-  function convertMinsNumToTime(minsNum) {
+    function convertMinsNumToTime(minsNum) {
+        if (minsNum >= 1440) {
+            minsNum =  minsNum - 1440;
+        }
         if ($.isNumeric(minsNum)) {
             // var mins_num = parseFloat(this, 10); // don't forget the second param
             var hours = Math.floor(minsNum / 60);
@@ -273,7 +280,7 @@
         var serviceMandatory = -1;
         if (type.val()) {
             studentMandatory = studentMandatoryArray.indexOf(type.val());
-            serviceMandatory = serviceEnabling.indexOf(type.val());
+            serviceMandatory = serviceDisabled.indexOf(type.val());
         }
         if (!student.value.trim() && studentMandatory != -1) {
             $(".student-dropdown").addClass("errorField");
@@ -304,13 +311,19 @@
             if (pricelist.value) {
                 appointmentObj.hub_pricelist = pricelist.value;
             }
+            
             appointmentObj.hub_location = appointment.location.value;
             appointmentObj.hub_type = parseInt(type.val());
             appointmentObj.hub_start_date = moment(appointment.startDate.value).format("YYYY-MM-DD");
             appointmentObj.hub_end_date = moment(appointment.startDate.value).format("YYYY-MM-DD");
             appointmentObj.hub_starttime = convertToMinutes(appointment.startTime.value);
             appointmentObj.hub_endtime = convertToMinutes(appointment.endTime.value);
-            appointmentObj.regardingobjectid = $(appointment.customer).attr("customer-id");
+            if (appointmentObj.hub_type != 12) {
+                appointmentObj.regardingobjectid = $(appointment.customer).attr("customer-id");
+            } else {
+                appointmentObj.hub_loggedinuser = currentUser.name;
+                appointmentObj.regardingobjectid = currentUser.id;
+            }
             appointmentObj.objOwner = locationOwnerObj['ownerObj'];
             if (appointment.mode.value) {
                 appointmentObj.hub_mode = parseInt(appointment.mode.value);
@@ -324,11 +337,20 @@
             if (appointment.discount.value) {
                 appointmentObj.hub_discount = appointment.discount.value;
             }
+            if (appointment.staff.value) {
+                appointmentObj.hub_staff = appointment.staff.value
+            }
+            if (appointment.allDay.checked) {
+                appointmentObj.hub_fulldayappointment = appointment.allDay.checked
+            }
+            if (appointment.outOfOffice.checked) {
+                appointmentObj.hub_outofofficeappointment = appointment.outOfOffice.checked
+            }
             setTimeout(function () {
-                if (serviceEnabling.indexOf(type.val()) == -1) {
-                    saveConfirmation($(appointment.pricelist).attr("price-amount") + " is the price that you have selected for this Appointment. Do you wish to continue?", appointmentObj);
+                if (serviceDisabled.indexOf(type.val()) == -1) {
+                    confirmationPopup($(appointment.pricelist).attr("price-amount") + " is the price that you have selected for this Appointment. Do you wish to continue?", appointmentObj,'SAVE');
                 } else {
-                    saveAppointmentObj(appointmentObj);
+                    saveAppointmentObj(appointmentObj,false);
                 }
             },100)
         } else {
@@ -337,16 +359,18 @@
         e.preventDefault();
     });
 
-    var saveAppointmentObj = function (appointmentObj) {
+    var saveAppointmentObj = function (appointmentObj,confirmation) {
         $(".loader").show();
-        var responseObj = data.saveAppointment(appointmentObj);
+        var responseObj = data.saveAppointment(appointmentObj, confirmation);
         setTimeout(function () {
             if (typeof (responseObj) == "boolean" && responseObj) {
                 $(".loader").hide();
                 prompt("Appointment created successfully", "Success");
-            } else if (typeof (responseObj) == "string") {
-                prompt(responseObj, "Error");
+            } else if (typeof (responseObj) == "object" && responseObj.Type == "ERROR") {
+                prompt(responseObj.Message, "Error");
                 $(".loader").hide();
+            } else if (typeof (responseObj) == "object" && responseObj.Type == "CONFIRM") {
+                confirmationPopup(responseObj.Message, appointmentObj, "STAFF");
             }
         }, 100);
     }
@@ -372,7 +396,10 @@
                     $(".end-timepicker").val(tConvert(convertMinsNumToTime(endTime)));
                 }
             }
-            if (startTime > endTime) {
+            if (endTime >= 1440) {
+                endTime = endTime - 1440;
+            }
+            if (startTime > endTime && endTime != 0) {
                 $(".timepicker").addClass("errorField");
                 return false;
             } else {
@@ -404,7 +431,7 @@
                 $(".student .combobox-container input[type=hidden]").on("change", function () {
                     var appointment = $("#appointmentForm");
                     appointment = appointment[0];
-                    if (appointment.student.value) {
+                    if (appointment.student[1].value) {
                         $('.student-dropdown').removeClass('errorField');
                     }
                 });
@@ -461,11 +488,14 @@
 
     $("body").on("click", ".type-dropdown li a", function () {
         if ($('.type-btn').val() != $(this).attr("value-id")) {
-            $('.type-btn').val($(this).attr("value-id"));
-            $('.type-btn').text($(this).text());
-            var typeIndex = nonPaidAppointments.indexOf($(this).attr("value-id"));
-            var studentMandatryIndx = studentMandatoryArray.indexOf($(this).attr("value-id"));
-            var serviceMandtryIndx = serviceEnabling.indexOf($(this).attr("value-id"));
+            var selectedId = $(this).attr("value-id");
+            var selectedType = $(this).text();
+            setMiscellaneous(selectedId, $('.type-btn').val());
+            $('.type-btn').val(selectedId);
+            $('.type-btn').text(selectedType);
+            var typeIndex = nonPaidAppointments.indexOf(selectedId);
+            var studentMandatryIndx = studentMandatoryArray.indexOf(selectedId);
+            var serviceMandtryIndx = serviceDisabled.indexOf(selectedId);
             var appointment = $("#appointmentForm")[0];
             if (studentMandatryIndx == -1) {
                 $(".student-astriek").css("display", "none");
@@ -484,6 +514,7 @@
                 $('.picker').val("");
                 $('.picker').attr("disabled", "disabled");
                 $('.timepicker').attr("disabled", "disabled");
+                populateStaff($('.picker').val());
             } else {
                 $('.picker').removeAttr("disabled");
                 $('.timepicker').removeAttr("disabled");
@@ -498,6 +529,31 @@
             enableServices();
         }
     });
+
+    var setMiscellaneous = function (typeId,prevId) {
+        var customerSearchBox = $(".customer-comboBox");
+        var studentDisplayBox = $(".student-dropdown");
+        var studentValueBox = $(".student .combobox-container input[type=hidden]");
+        $(".allDay-checkbox")[0].checked = false;
+        $(".allDay-checkbox").attr("disabled", "disabled");
+        if (typeId == "12") {
+            $(".exceptionCheckbox input").attr("disabled", "disabled");
+            $(".allDay-checkbox").removeAttr("disabled");
+            customerSearchBox.val(currentUser.name);
+            currentUser.id = currentUser.id.replace(/{|}/g, "")
+            customerSearchBox.attr("customer-id", currentUser.id);
+            customerSearchBox.attr("disabled", "disabled");
+            studentDisplayBox.val("");
+            studentValueBox.val("");
+            studentDisplayBox.attr("disabled", "disabled");
+        } else if (prevId == "12") {                            //checked so that the customer box is cleared only if miscellaneous is selected previously
+            $(".exceptionCheckbox input").removeAttr("disabled");
+            customerSearchBox.val("");
+            customerSearchBox.attr("customer-id", "");
+            customerSearchBox.removeAttr("disabled");
+            studentDisplayBox.removeAttr("disabled");
+        }
+    }
 
     $("body").on("change", ".exceptionCheckbox input", function () {
         var exception = $(this)[0].checked;
@@ -554,7 +610,7 @@
         });
     }
 
-    function saveConfirmation(message, saveObj) {
+    function confirmationPopup(message, saveObj, type) {
         $("#dialog > .dialog-msg").text(message);
         $("#dialog").dialog({
             resizable: false,
@@ -571,9 +627,15 @@
                 Yes: function () {
                     $(".loader").show();
                     $(this).dialog("close");
-                    setTimeout(function () {
-                        saveAppointmentObj(saveObj);
-                    },100);
+                    if (type == "SAVE") {
+                        setTimeout(function () {
+                            saveAppointmentObj(saveObj,false);
+                        }, 100);
+                    }else if(type == "STAFF"){
+                        setTimeout(function () {
+                            saveAppointmentObj(saveObj,true);
+                        }, 100);
+                    }
                 },
                 No: function () {
                     $(this).dialog("close");
@@ -652,7 +714,9 @@
                     var duration = appointmentHour[(appointmentHour.length - 1)]["aworkhours_x002e_hub_duration"];
                     return duration;
                 } else {
-                    $(".end-timepicker").removeAttr("disabled");
+                    if (appointmentForm.location && appointmentForm.date) {
+                        $(".end-timepicker").removeAttr("disabled");
+                    }
                     return false;
                 }
             } else {
@@ -678,7 +742,7 @@
         var servicesDropdown = $(".service .service-dropdown");
         var discount = $(".discount-btn");
         var autoComplete = $(".service .combobox-container");
-        var index = serviceEnabling.indexOf(typeId);
+        var index = serviceDisabled.indexOf(typeId);
         $(".loader").show();
         if (date.value && typeId && locId && index == -1) {
             typeId = parseInt(typeId);
@@ -732,6 +796,7 @@
                 var selectedDate = moment(date.value).format("YYYY-MM-DD");
                 if (nonPaidAppointments.indexOf(typeId.toString()) == -1) {
                     appointmentHour = data.getAppointmentHours(locId, typeId, selectedDate, selectedDate);
+                    timeValidator();
                 }
                 populateDiscount(date.value, locId, typeId.toString());
                 var autoCompleteTemplate = "";
@@ -792,6 +857,7 @@
     //Triggers from find slot page
     $("body").on("click", "#enableService", function () {
         enableServices();
+        populateStaff($(".picker").val());
     });
 
     $("body").on("click", ".pricelist-dropdown li a", function () {
@@ -812,7 +878,7 @@
 
     var populateDiscount = function (date, locId, typeId) {
         var discountDropdown = $('.discount-btn');
-        if (serviceEnabling.indexOf(typeId) == -1) {
+        if (serviceDisabled.indexOf(typeId) == -1) {
             discountDropdown = $('.discount-btn');
             discountDropdown.removeAttr("disabled");
             discountDropdown.val("");
@@ -834,6 +900,46 @@
             discountDropdown.attr("disabled","disabled");
         }
     }
+
+    var populateStaff = function (date) {
+        var dropdownMenu = $(".staff-dropdown .dropdown-menu");
+        dropdownMenu.empty();
+        $(".staff-btn").val("");
+        $(".staff-btn").text("Select a Staff");
+        $(".staff-btn").attr("disabled","disabled");
+        if (date) {
+            var selectedDate = moment(date).format("YYYY-MM-DD");
+            var locId = window.location.href.split("=")[1];
+            var staffList = data.getStaff(locId, selectedDate);
+            if (staffList && staffList.length) {
+                $(".staff-btn").removeAttr("disabled");
+                var autoCompleteTemplate = "";
+                $.each(staffList, function (key, staff) {
+                    autoCompleteTemplate += "<li><a href='javascript:void(0)'  value-id=" + staff["hub_staffid"] + ">" + staff["hub_name"] + "</a></li>";
+                });
+            }
+            dropdownMenu.append(autoCompleteTemplate);
+        }
+    }
+
+    $("body").on("click", ".staff-dropdown li a", function () {
+        if ($('.staff-btn').val() != $(this).attr("value-id")) {
+            $('.staff-btn').val($(this).attr("value-id"));
+            $('.staff-btn').text($(this).text());
+        }
+    });
+
+    $("body").on("change", ".allDay-checkbox", function () {
+        var allDay = $(this)[0].checked;
+        if (allDay) {
+            $(".timepicker").attr("disabled", "disabled");
+            $('.start-timepicker').val("8:00 AM");
+            $('.end-timepicker').val("8:00 PM");
+        } else {
+            $(".timepicker").removeAttr("disabled");
+        }
+    });
+
     $(".loader").hide();
 });
 
