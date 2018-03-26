@@ -1,4 +1,4 @@
-﻿var customers = [
+var customers = [
     {
         "hub_firstname": "Diana",
         "hub_lastname": "Ken",
@@ -865,7 +865,7 @@ var pricelist = [
     "@odata.etag": "W/\"3895840\"",
     "hub_price": "20",
     "hub_price@OData.Community.Display.V1.FormattedValue": "$20.00",
-    "hub_name": "GI | $20",
+    "hub_name": "GI | $20 Sylvan Reading Beginners Class",
     "hub_pricelistid": "e9cfb78f-9052-e711-80f1-c4346bad526i",
     "_transactioncurrencyid_value": "e9cfb78f-9052-e711-80f1-c4346bad5",
     "_transactioncurrencyid_value@Microsoft.Dynamics.CRM.assocuiatenavigationproperty": "transactioncurrencyid",
@@ -937,6 +937,68 @@ var businesClosure = [
   }
 ];
 
+var loggedInUser = [{
+    "id": "{ade1da6f-4c8d-e711-80f7-c4346badc682}",
+    "name": "Trevor Philips",
+    "entityType": "systemuser"
+}];
+
+var staffs = [
+    {
+        "@odata.etag": "W/\"5776521\"","hub_name": "Alex Shaw",
+        "hub_startdate@OData.Community.Display.V1.FormattedValue": "1/2/2017",
+        "hub_startdate": "2017-01-02T00:00:00Z",
+        "hub_staffid": "814bd9db-e707-e811-8106-c4346bacfbbc"
+    },
+  {
+      "@odata.etag": "W/\"5815519\"",
+      "hub_name": "Joanaa k",
+      "hub_startdate@OData.Community.Display.V1.FormattedValue": "5/17/2017",
+      "hub_startdate": "2017-05-17T00:00:00Z",
+      "hub_staffid": "57976b53-2c0b-e811-8105-c4346bac4304"
+  },
+  {
+      "@odata.etag": "W/\"5732568\"",
+      "hub_name": "John Smith",
+      "hub_startdate@OData.Community.Display.V1.FormattedValue": "10/19/2016",
+      "hub_startdate": "2016-10-19T00:00:00Z",
+      "hub_staffid": "5886bcbd-ab77-e711-80f3-c4346bad526c"
+  },
+  {
+      "@odata.etag": "W/\"5732570\"",
+      "hub_name": "Jordan S",
+      "hub_startdate@OData.Community.Display.V1.FormattedValue": "10/4/2016",
+      "hub_startdate": "2016-10-04T00:00:00Z",
+      "hub_staffid": "ed7614e3-fc79-e711-80f5-c4346badc680"
+  },
+  {
+      "@odata.etag": "W/\"5732569\"",
+      "hub_name": "Kiran A",
+      "hub_startdate@OData.Community.Display.V1.FormattedValue": "1/2/2018",
+      "hub_startdate": "2018-01-02T00:00:00Z",
+      "hub_staffid": "5ac88f8b-c9fa-e711-8105-c4346bad526c"
+  },
+  {
+      "@odata.etag": "W/\"5732567\"",
+      "hub_name": "Mercy J",
+      "hub_startdate@OData.Community.Display.V1.FormattedValue": "3/26/2017",
+      "hub_startdate": "2017-03-26T00:00:00Z",
+      "hub_staffid": "0aa5487c-aa05-e811-8106-c4346bacfbbc"
+  },
+  {
+      "@odata.etag": "W/\"5732572\"",
+      "hub_name": "Tim Tom",
+      "hub_startdate@OData.Community.Display.V1.FormattedValue": "12/25/2017",
+      "hub_startdate": "2017-12-25T00:00:00Z",
+      "hub_staffid": "45fdd1d1-28ed-e711-8105-c4346badc680"
+  }
+];
+
+var saveConfimration = {
+    "Type": "CONFIRM",
+    "Message": "The staff is not available do you wish to continue ? "
+}
+
 function AppointmentData() {
     this.getCustomers = function (searchString) {
         for (var i = 5; i < 2000; i++) {
@@ -955,8 +1017,12 @@ function AppointmentData() {
         return locations;
     }
 
-    this.saveAppointment = function (obj) {
-        return true;
+    this.saveAppointment = function (obj,confimration) {
+        if (confirmation) {
+            return true;
+        } else {
+            return saveConfimration;
+        }
     }
 
     this.getAppointmentHours = function (startDate, endDate) {
@@ -977,5 +1043,17 @@ function AppointmentData() {
 
     this.getBusinessClosure = function (centerId) {
         return businesClosure;
+    }
+
+    this.getLoggedInUser = function () {
+        return loggedInUser;
+    }
+
+    this.getStaff = function (locId,date) {
+        return staffs;
+    }
+
+    this.checkForClosure = function (locId,month,year) {
+        return true;
     }
 }
