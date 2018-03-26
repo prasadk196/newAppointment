@@ -203,8 +203,27 @@ $(function () {
             validateappointment();
             timeValidator();
             populateStaff(date);
+        },
+        onChangeMonthYear: function (year, month) {
+            checkForClosure(month, year);
         }
     };
+
+    var checkForClosure = function (month, year) {
+        console.log(month + "--" + year);
+        var parentCenterId = window.location.href.split("=")[1];
+        var closure = data.checkForClosure(parentCenterId, month, year);
+        if (closure) {
+            var closureStartDate = month + "-01-" + year;
+            closureStartDate = new Date(moment(closureStartDate).format('MM-DD-YYYY'));
+            var closureEndDate = moment(closureStartDate).endOf('month')._d;
+            for (var j = closureStartDate.getTime() ; j <= closureEndDate.getTime() ; j += (24 * 60 * 60 * 1000)) {
+                disableddates.push(moment(new Date(j)).format('YYYY-MM-DD'));
+            }
+        }
+    }
+
+    checkForClosure(new Date().getMonth() + 1,new Date().getFullYear());
     
     function convertMinsNumToTime(minsNum) {
         if (minsNum >= 1440) {
