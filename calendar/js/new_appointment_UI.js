@@ -210,7 +210,6 @@ $(function () {
     };
 
     var checkForClosure = function (month, year) {
-        console.log(month + "--" + year);
         var parentCenterId = window.location.href.split("=")[1];
         var closure = data.checkForClosure(parentCenterId, month, year);
         if (closure) {
@@ -364,6 +363,9 @@ $(function () {
             }
             if (appointment.outOfOffice.checked) {
                 appointmentObj.hub_outofofficeappointment = appointment.outOfOffice.checked
+            }
+            if (appointment.appointmentHourId) {
+                appointmentObj.hub_timingsid = appointment.appointmentHourId;
             }
             setTimeout(function () {
                 if (serviceDisabled.indexOf(type.val()) == -1) {
