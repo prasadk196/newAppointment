@@ -4,7 +4,8 @@ $(function () {
     var customers = [];
     var studentMandatoryArray = ["1","7","2","6","11"];
     var nonPaidAppointments = ["3", "4", "5", "7", "8", "9","12"];
-    var serviceDisabled = ["1", "3", "4", "5", "7", "8", "9","12"];
+    var serviceDisabled = ["1", "3", "4", "5", "7", "8", "9", "12"];
+    var gradeMandatoryArray = ["6", "7"];
     var appointmentHour;
     var currentUser = data.getLoggedInUser();
     currentUser = currentUser[0];
@@ -316,6 +317,7 @@ $(function () {
             $(".pricelist-dropdown button").removeClass("errorField");
         }
         var validity = $('.errorField');
+        var gradeValidation = true;
         if (!validity.length) {
             var appointmentObj = {};
             if (student.value) {
@@ -332,6 +334,13 @@ $(function () {
             
             appointmentObj.hub_location = appointment.location.value;
             appointmentObj.hub_type = parseInt(type.val());
+            if (gradeMandatoryArray.includes(type.val()) && student.value) {
+                var selectedStud = $("option[value=" + student.value + "]");
+                var grade = $(selectedStud).attr("grade");
+                if (grade == "undefined" || !grade) {
+                    gradeValidation = false
+                }
+            }
             appointmentObj.hub_start_date = moment(appointment.startDate.value).format("YYYY-MM-DD");
             appointmentObj.hub_end_date = moment(appointment.startDate.value).format("YYYY-MM-DD");
             appointmentObj.hub_starttime = convertToMinutes(appointment.startTime.value);
@@ -368,10 +377,14 @@ $(function () {
                 appointmentObj.hub_timingsid = appointment.appointmentHourId;
             }
             setTimeout(function () {
-                if (serviceDisabled.indexOf(type.val()) == -1) {
-                    confirmationPopup($(appointment.pricelist).attr("price-amount") + " is the price that you have selected for this Appointment. Do you wish to continue?", appointmentObj,'SAVE');
+                if (!gradeValidation) {
+                    prompt("Student Grade is required for assesment", "Error");
                 } else {
-                    saveAppointmentObj(appointmentObj,false);
+                    if (serviceDisabled.indexOf(type.val()) == -1) {
+                        confirmationPopup($(appointment.pricelist).attr("price-amount") + " is the price that you have selected for this Appointment. Do you wish to continue?", appointmentObj, 'SAVE');
+                    } else {
+                        saveAppointmentObj(appointmentObj, false);
+                    }
                 }
             },100)
         } else {
@@ -443,7 +456,7 @@ $(function () {
             $('.student-dropdown option').remove();
             autoCompleteTemplate = "<option value='' selected='selected'>Select a Student</option>";
             $.each(students, function (key, student) {
-                autoCompleteTemplate += " <option  value=" + student.contactid + " title=" + student.fullname  + ">" + student.fullname + "</option>";
+                autoCompleteTemplate += " <option  value=" + student.contactid + " title=" + student.fullname  + " grade="+student.hub_grade+">" + student.fullname + "</option>";
             })
             $('.student-dropdown').append(autoCompleteTemplate);
             setTimeout(function () {
