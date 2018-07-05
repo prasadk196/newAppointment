@@ -334,7 +334,7 @@ $(function () {
             
             appointmentObj.hub_location = appointment.location.value;
             appointmentObj.hub_type = parseInt(type.val());
-            if (genderMandatoryArray.includes(type.val()) && student.value) {
+            if (genderMandatoryArray.indexOf(type.val()) != -1 && student.value) {
                 var selectedStud = $("option[value=" + student.value + "]");
                 var gender = $(selectedStud).attr("gender");
                 if (gender == "undefined" || !gender) {
@@ -975,5 +975,12 @@ $(function () {
     });
 
     $(".loader").hide();
+
+    if (!String.prototype.startsWith) {
+        String.prototype.startsWith = function (searchString, position) {
+            position = position || 0;
+            return this.indexOf(searchString, position) === position;
+        };
+    }
 });
 
