@@ -1,6 +1,7 @@
 $(function () {
     var data = new AppointmentData();
-    $(".loader").show();
+    wjQuery(".loader").hide();
+    Xrm.Utility.showProgressIndicator("Processing Please wait...");
     var customers = [];
     var studentMandatoryArray = ["1","7","2","6","11"];
     var nonPaidAppointments = ["3", "4", "5", "7", "8", "9","12"];
@@ -277,12 +278,12 @@ $(function () {
     }
 
     $('body').on("click", "#saveBtn", function () {
-        $(".loader").show();
+        Xrm.Utility.showProgressIndicator("Processing Please wait...");
         $("#appointmentForm").submit();    
     });
     
     $("body").on("submit", "#appointmentForm", function (e) {
-        $(".loader").show();
+        Xrm.Utility.showProgressIndicator("Processing Please wait...");
         var appointment = $("#appointmentForm");
         appointment = appointment[0];
         $("input[required='required']:blank").addClass("errorField");
@@ -334,7 +335,7 @@ $(function () {
             
             appointmentObj.hub_location = appointment.location.value;
             appointmentObj.hub_type = parseInt(type.val());
-            if (genderMandatoryArray.indexOf(type.val()) != -1 && student.value) {
+            if (genderMandatoryArray.includes(type.val()) && student.value) {
                 var selectedStud = $("option[value=" + student.value + "]");
                 var gender = $(selectedStud).attr("gender");
                 if (gender == "undefined" || !gender) {
@@ -388,21 +389,21 @@ $(function () {
                 }
             },100)
         } else {
-            $(".loader").hide();
+            Xrm.Utility.closeProgressIndicator();
         }
         e.preventDefault();
     });
 
     var saveAppointmentObj = function (appointmentObj,confirmation) {
-        $(".loader").show();
+        Xrm.Utility.showProgressIndicator("Processing Please wait...");
         var responseObj = data.saveAppointment(appointmentObj, confirmation);
         setTimeout(function () {
             if (typeof (responseObj) == "boolean" && responseObj) {
-                $(".loader").hide();
+                Xrm.Utility.closeProgressIndicator();
                 prompt("Appointment created successfully", "Success");
             } else if (typeof (responseObj) == "object" && responseObj.Type == "ERROR") {
                 prompt(responseObj.Message, "Error");
-                $(".loader").hide();
+                Xrm.Utility.closeProgressIndicator();
             } else if (typeof (responseObj) == "object" && responseObj.Type == "CONFIRM") {
                 confirmationPopup(responseObj.Message, appointmentObj, "STAFF");
             }
@@ -625,7 +626,7 @@ $(function () {
             show: {
                 effect: 'slide',
                 complete: function () {
-                    $(".loader").hide();
+                    Xrm.Utility.closeProgressIndicator();
                 }
             },
             buttons: {
@@ -654,12 +655,12 @@ $(function () {
             show: {
                 effect: 'slide',
                 complete: function () {
-                    $(".loader").hide();
+                    Xrm.Utility.closeProgressIndicator();
                 }
             },
             buttons: {
                 Yes: function () {
-                    $(".loader").show();
+                    Xrm.Utility.showProgressIndicator("Processing Please wait...");
                     $(this).dialog("close");
                     if (type == "SAVE") {
                         setTimeout(function () {
@@ -714,7 +715,7 @@ $(function () {
 
     $("#findSlot").on("click", function () {
         var sidenav = $("#sideNav");
-        $(".loader").show();
+        Xrm.Utility.showProgressIndicator("Processing Please wait...");
             var appointment = $("#appointmentForm")[0];
             if (appointment.location.value && appointment.type.value) {
                 $("#refetch").click();
@@ -723,7 +724,7 @@ $(function () {
                 $("#sideNav").css("visibility", "visible");
                 sidenav.css("width", "100%");
                 $("#backBtn").show();
-                $(".loader").hide();
+                Xrm.Utility.closeProgressIndicator();
                 }, 200);
             } else {
                 if (!appointment.location.value) {
@@ -732,7 +733,7 @@ $(function () {
                 if (!appointment.type.value) {
                     $(".type-btn").addClass("errorField");
                 }
-                $(".loader").hide();
+                Xrm.Utility.closeProgressIndicator();
             }
     });
 
@@ -777,7 +778,7 @@ $(function () {
         var discount = $(".discount-btn");
         var autoComplete = $(".service .combobox-container");
         var index = serviceDisabled.indexOf(typeId);
-        $(".loader").show();
+        Xrm.Utility.showProgressIndicator("Processing Please wait...");
         if (date.value && typeId && locId && index == -1) {
             typeId = parseInt(typeId);
             servicesDropdown.removeAttr("disabled");
@@ -813,7 +814,7 @@ $(function () {
                         }, 50);
 
                     });
-                    $(".loader").hide();
+                    Xrm.Utility.closeProgressIndicator();
                 }, 100);
             } else {
                 var autoCompleteTemplate = "";
@@ -824,7 +825,7 @@ $(function () {
                 $('.service-dropdown').css("display", "inline-block");
                 populatepricelist("");
             }
-            $(".loader").hide();
+            Xrm.Utility.closeProgressIndicator();
         } else if (date.value && typeId && locId && index != -1) {
                 typeId = parseInt(typeId);
                 var selectedDate = moment(date.value).format("YYYY-MM-DD");
@@ -853,7 +854,7 @@ $(function () {
                 $(".price-btn").val("");
                 $(".price-btn").removeClass("errorField");
                 $(".price-btn").attr("disabled", "disabled");
-                $(".loader").hide();
+                Xrm.Utility.closeProgressIndicator();
             } else {
             var autoCompleteTemplate = "";
             $('.service-dropdown option').remove();
@@ -884,7 +885,7 @@ $(function () {
             discount.removeClass("errorField");
             discount.val("");
             discount.attr("disabled", "disabled");
-            $(".loader").hide();
+            Xrm.Utility.closeProgressIndicator();
         }
     }
 
@@ -974,13 +975,6 @@ $(function () {
         }
     });
 
-    $(".loader").hide();
-
-    if (!String.prototype.startsWith) {
-        String.prototype.startsWith = function (searchString, position) {
-            position = position || 0;
-            return this.indexOf(searchString, position) === position;
-        };
-    }
+    Xrm.Utility.closeProgressIndicator();
 });
 
