@@ -311,6 +311,28 @@ $(function () {
             $(".service-dropdown").addClass("errorField");
         } else {
             $(".service-dropdown").removeClass("errorField");
+            if(service.value){
+                Xrm.Utility.showProgressIndicator("Processing Please wait...");
+                var validation = data.checkForGrade(service.value);
+                Xrm.Utility.closeProgressIndicator();
+                var selectedStud = $("option[value=" + student.value + "]");
+                var grade = $(selectedStud).attr("grade");
+                if (validation != null && grade && (validation[0].hub_startgrade || validation[0].hub_endgrade)) {
+                    validation = validation[0];
+                    if (!validation.hub_startgrade) {
+                        validation.hub_startgrade = "0";
+                    } else if (!validation.hub_endgrade) {
+                        //set end grade as 100 to allow all the grades greater than start grade
+                        validation.hub_endgrade = "100";
+                    }
+                    if (grade >= validation.hub_startgrade && validation.hub_endgrade && grade <= validation.hub_endgrade) {
+                        $(".student-dropdown").removeClass("errorField");
+                    }else{
+                        $(".student-dropdown").addClass("errorField");
+                        prompt("Student grade is not matching with selected service.","Error")
+                    }
+                }
+            }
         }
         if (!pricelist.value && serviceMandatory == -1) {
             $(".pricelist-dropdown button").addClass("errorField");
@@ -335,7 +357,7 @@ $(function () {
             
             appointmentObj.hub_location = appointment.location.value;
             appointmentObj.hub_type = parseInt(type.val());
-            if (genderMandatoryArray.includes(type.val()) && student.value) {
+            if (genderMandatoryArray.indexOf(type.val()) != -1 && student.value) {
                 var selectedStud = $("option[value=" + student.value + "]");
                 var gender = $(selectedStud).attr("gender");
                 if (gender == "undefined" || !gender) {
@@ -457,7 +479,7 @@ $(function () {
             $('.student-dropdown option').remove();
             autoCompleteTemplate = "<option value='' selected='selected'>Select a Student</option>";
             $.each(students, function (key, student) {
-                autoCompleteTemplate += " <option  value=" + student.contactid + " title=" + student.fullname + " gender=" + student.gendercode + ">" + student.fullname + "</option>";
+                autoCompleteTemplate += " <option  value=" + student.contactid + " grade=" + student.hub_grade + " title=" + student.fullname + " gender=" + student.gendercode + ">" + student.fullname + "</option>";
             })
             $('.student-dropdown').append(autoCompleteTemplate);
             setTimeout(function () {
@@ -497,10 +519,10 @@ $(function () {
     var timeConfig = {
         timeFormat: 'h:mm p',
         interval: 15,
-        minTime: '00:00 am',
-        maxTime: '11:45 pm',
+        minTime: '06:00 am',
+        maxTime: '10:00 pm',
         defaultTime: '00:00 pm',
-        startTime: '00:00 am',
+        startTime: '06:00 am',
         dynamic: false,
         dropdown: true,
         scrollbar: true,
@@ -968,13 +990,20 @@ $(function () {
         var allDay = $(this)[0].checked;
         if (allDay) {
             $(".timepicker").attr("disabled", "disabled");
-            $('.start-timepicker').val("8:00 AM");
-            $('.end-timepicker').val("8:00 PM");
+            $('.start-timepicker').val("6:00 AM");
+            $('.end-timepicker').val("10:00 PM");
         } else {
             $(".timepicker").removeAttr("disabled");
         }
     });
 
     Xrm.Utility.closeProgressIndicator();
+
+    if (!String.prototype.startsWith) {
+        String.prototype.startsWith = function (searchString, position) {
+            position = position || 0;
+            return this.indexOf(searchString, position) === position;
+        };
+    }
 });
 
