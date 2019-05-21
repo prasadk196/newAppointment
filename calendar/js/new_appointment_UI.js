@@ -201,7 +201,7 @@ $(function () {
         changeMonth: true,
         changeYear: true,
         onSelect: function (date) {
-            enableServices();
+            enableServices("date");
             validateappointment();
             timeValidator();
             populateStaff(date);
@@ -625,7 +625,7 @@ $(function () {
         } else {
             if (appointment.type.value && nonPaidAppointments.indexOf(appointment.type.value) == -1) {
                 $('.picker').val("");
-                enableServices();
+                enableServices("check");
                 $('.picker').attr("disabled", "disabled");
                 $('.timepicker').attr("disabled", "disabled");
                 $('#findSlot').css("display", "inline");
@@ -789,7 +789,7 @@ $(function () {
         populated Discounts pricelist services from here based on the appointment types
     */
 
-    var enableServices = function () {
+    var enableServices = function (fieldName) {
         var appointment = $("#appointmentForm")[0];
         var date = appointment.startDate;
         var type = appointment.type;
@@ -800,62 +800,68 @@ $(function () {
         var discount = $(".discount-btn");
         var autoComplete = $(".service .combobox-container");
         var index = serviceDisabled.indexOf(typeId);
-        Xrm.Utility.showProgressIndicator("Processing Please wait...");
-        if (date.value && typeId && locId && index == -1) {
+        Xrm.Utility.showProgressIndicator("Processing Please wait..."); 
+        if (typeId && locId && index == -1) {
             typeId = parseInt(typeId);
             servicesDropdown.removeAttr("disabled");
-            var selectedDate = moment(date.value).format("YYYY-MM-DD");
-            appointmentHour = data.getAppointmentHours(locId, typeId, selectedDate, selectedDate);
-            timeValidator();
-            populateDiscount(date.value, locId, typeId.toString());
-            populatepricelist();
-            var services = data.getServices(locId, typeId, selectedDate);
-            if (autoComplete && autoComplete.length) {
-                autoComplete.remove();
+            var services = data.getServices(locId, typeId, moment(new Date()).format("YYYY-MM-DD"));
+            if (date.value) {
+                var selectedDate = moment(date.value).format("YYYY-MM-DD");
+                appointmentHour = data.getAppointmentHours(locId, typeId, selectedDate, selectedDate);
+                populateDiscount(date.value, locId, typeId.toString());
             }
-            if (services && services.length) {
-                var autoCompleteTemplate = "";
-                $('.service-dropdown option').remove();
-                autoCompleteTemplate = "<option value='' selected='selected'>Select a Service</option>";
-                $.each(services, function (key, service) {
-                    autoCompleteTemplate += " <option  value=" + service["hub_sch_diagnostic_serviceid"] + " title=" + service["hub_name"] + ">" + service["hub_name"] + "</option>";
-                });
-                $('.service-dropdown').append(autoCompleteTemplate);
-                setTimeout(function () {
-                    $('.service-dropdown.comboBox').combobox();
-                    $(".service-dropdown").attr("name", "service");
-                    $(".service .combobox-container input[type=hidden]").on("change", function () {
-                        clearTimeout(serviceTimeout);
-                        serviceTimeout = setTimeout(function () {
-                            var appointment = $("#appointmentForm");
-                            appointment = appointment[0];
-                            populatepricelist(appointment.service[0].value);
-                            if (appointment.service[0].value) {
-                                $('.service-dropdown').removeClass('errorField');
-                            }
-                        }, 50);
-
+            timeValidator();
+            populatepricelist();
+            if (fieldName != 'date' && fieldName != 'check') {
+                if (autoComplete && autoComplete.length) {
+                    autoComplete.remove();
+                }
+                if (services && services.length) {
+                    var autoCompleteTemplate = "";
+                    $('.service-dropdown option').remove();
+                    autoCompleteTemplate = "<option value='' selected='selected'>Select a Service</option>";
+                    $.each(services, function (key, service) {
+                        autoCompleteTemplate += " <option  value=" + service["hub_sch_diagnostic_serviceid"] + " title=" + service["hub_name"] + ">" + service["hub_name"] + "</option>";
                     });
-                    Xrm.Utility.closeProgressIndicator();
-                }, 100);
-            } else {
-                var autoCompleteTemplate = "";
-                $('.service-dropdown option').remove();
-                autoCompleteTemplate = "<option value='' selected='selected'>Select a Service</option>";
-                $('.service-dropdown').append(autoCompleteTemplate);
-                $(".service .combobox-container").css("display", "none");
-                $('.service-dropdown').css("display", "inline-block");
-                populatepricelist("");
+                    $('.service-dropdown').append(autoCompleteTemplate);
+                    setTimeout(function () {
+                        $('.service-dropdown.comboBox').combobox();
+                        $(".service-dropdown").attr("name", "service");
+                        $(".service .combobox-container input[type=hidden]").on("change", function () {
+                            clearTimeout(serviceTimeout);
+                            serviceTimeout = setTimeout(function () {
+                                var appointment = $("#appointmentForm");
+                                appointment = appointment[0];
+                                populatepricelist(appointment.service[0].value);
+                                if (appointment.service[0].value) {
+                                    $('.service-dropdown').removeClass('errorField');
+                                }
+                            }, 50);
+
+                        });
+                        Xrm.Utility.closeProgressIndicator();
+                    }, 100);
+                } else {
+                    var autoCompleteTemplate = "";
+                    $('.service-dropdown option').remove();
+                    autoCompleteTemplate = "<option value='' selected='selected'>Select a Service</option>";
+                    $('.service-dropdown').append(autoCompleteTemplate);
+                    $('.service-dropdown').css("display", "inline-block");
+                    $(".service .combobox-container").css("display", "none");
+                    populatepricelist("");
+                }
             }
             Xrm.Utility.closeProgressIndicator();
-        } else if (date.value && typeId && locId && index != -1) {
+        } else if (typeId && locId && index != -1) {
                 typeId = parseInt(typeId);
-                var selectedDate = moment(date.value).format("YYYY-MM-DD");
-                if (nonPaidAppointments.indexOf(typeId.toString()) == -1) {
-                    appointmentHour = data.getAppointmentHours(locId, typeId, selectedDate, selectedDate);
-                    timeValidator();
+                if (date.value) {
+                    var selectedDate = moment(date.value).format("YYYY-MM-DD");
+                    if (nonPaidAppointments.indexOf(typeId.toString()) == -1) {
+                        appointmentHour = data.getAppointmentHours(locId, typeId, selectedDate, selectedDate);
+                        timeValidator();
+                    }
+                    populateDiscount(date.value, locId, typeId.toString());
                 }
-                populateDiscount(date.value, locId, typeId.toString());
                 var autoCompleteTemplate = "";
                 autoCompleteTemplate = "<option value='' selected='selected'>Select a Service</option>";
                 if (appointment.service) {
@@ -864,7 +870,7 @@ $(function () {
                         appointment.service[1].value = "";
                     }
                 }
-                if (autoComplete && autoComplete.length) {
+                if (autoComplete && autoComplete.length && (fieldName != 'date' && fieldName != 'check')) {
                     $('.service-dropdown option').remove();
                     autoComplete.remove();
                     $('.service-dropdown').append(autoCompleteTemplate);
@@ -878,25 +884,27 @@ $(function () {
                 $(".price-btn").attr("disabled", "disabled");
                 Xrm.Utility.closeProgressIndicator();
             } else {
-            var autoCompleteTemplate = "";
-            $('.service-dropdown option').remove();
-            autoCompleteTemplate = "<option value='' selected='selected'>Select a Service</option>";
-            $('.service-dropdown').append(autoCompleteTemplate);
-            if (appointment.service && appointment.service[0]) {
-                appointment.service[0].value = "";
-                if (appointment.service[1]) {
-                    appointment.service[1].value = "";
-                }
-            } else if (appointment.service) {
-                appointment.service.value = "";
-            }
-            if (autoComplete && autoComplete.length) {
+            if (fieldName != 'date' && fieldName != 'check') {
+                var autoCompleteTemplate = "";
                 $('.service-dropdown option').remove();
-                autoComplete.remove();
+                autoCompleteTemplate = "<option value='' selected='selected'>Select a Service</option>";
                 $('.service-dropdown').append(autoCompleteTemplate);
+                if (appointment.service && appointment.service[0]) {
+                    appointment.service[0].value = "";
+                    if (appointment.service[1]) {
+                        appointment.service[1].value = "";
+                    }
+                } else if (appointment.service) {
+                    appointment.service.value = "";
+                }
+                if (autoComplete && autoComplete.length) {
+                    $('.service-dropdown option').remove();
+                    autoComplete.remove();
+                    $('.service-dropdown').append(autoCompleteTemplate);
+                }
+                servicesDropdown.attr("disabled", "disabled");
+                servicesDropdown.css("display", "inline-block");
             }
-            servicesDropdown.attr("disabled", "disabled");
-            servicesDropdown.css("display", "inline-block");
             $(".pricelist-dropdown ul").empty();
             $(".price-btn").text("Select a Pricelist");
             $(".price-btn").val("");
@@ -913,7 +921,7 @@ $(function () {
 
     //Triggers from find slot page
     $("body").on("click", "#enableService", function () {
-        enableServices();
+        enableServices("date");
         populateStaff($(".picker").val());
     });
 
